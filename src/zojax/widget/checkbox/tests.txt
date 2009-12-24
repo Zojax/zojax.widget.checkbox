@@ -1,0 +1,251 @@
+===============
+Checkbox Widget
+===============
+
+  >>> from zope.interface.verify import verifyClass
+  >>> from z3c.form import interfaces
+  >>> from zojax.widget.checkbox.widget import CheckboxWidget
+  >>> from zojax.widget.checkbox.interfaces import ICheckboxWidget, ITermItem
+
+  >>> verifyClass(interfaces.IWidget, CheckboxWidget)
+  True
+
+The widget can be instantiated only using the request:
+
+  >>> from z3c.form.testing import TestRequest
+  >>> request = TestRequest()
+
+  >>> widget = CheckboxWidget(request)
+
+Before rendering the widget, one has to set the name and id of the widget:
+
+  >>> widget.id = 'widget-id'
+  >>> widget.name = 'widget.name'
+
+We also need to register the template for at least the widget and request:
+
+  >>> from zope import component
+  >>> from zope.pagetemplate.interfaces import IPageTemplate
+  >>> from z3c.form.widget import WidgetTemplateFactory
+  >>> from zojax.widget.checkbox.tests import getPath
+
+  >>> component.provideAdapter(
+  ...     WidgetTemplateFactory(getPath('widget_input.pt'), 'text/html'),
+  ...     (None, None, None, None, ICheckboxWidget),
+  ...     IPageTemplate, name=interfaces.INPUT_MODE)
+
+If we render the widget we get an emtpy widget:
+
+  >>> print widget.render()
+  <ul class="z-listing">
+  </ul>
+  <div style="clear: both;">
+    <input name="widget.name-empty-marker" type="hidden"
+           value="1" />
+  </div>
+
+Let's provide some values for this widget. We can do this by defining a source
+providing ``ITerms``. This source uses descriminators wich will fit our setup.
+
+  >>> import zope.schema.interfaces
+  >>> from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
+  >>> import z3c.form.term
+
+  >>> term1 = SimpleTerm('a', 'a', 'a')
+  >>> term2 = SimpleTerm('b', 'b', 'b')
+  >>> term3 = SimpleTerm('c', 'c', 'c')
+  >>> voc = SimpleVocabulary([term1, term2, term3])
+
+  >>> class SelectionTerms(z3c.form.term.Terms):
+  ...     def __init__(self, context, request, form, field, widget):
+  ...         self.terms = voc
+
+  >>> component.provideAdapter(SelectionTerms,
+  ...     (None, interfaces.IFormLayer, None, None, ICheckboxWidget))
+
+Now let's try if we get widget values:
+
+  >>> widget.update()
+  Traceback (most recent call last):
+  ...
+  ComponentLookupError: ...
+
+Let's register view for ITermItem
+
+  >>> from zojax.layout.interfaces import IPagelet
+  >>> from zojax.layout.pagelet import BrowserPagelet
+  >>> from zope.app.pagetemplate.viewpagetemplatefile import ViewPageTemplateFile
+
+  >>> class TermView(BrowserPagelet):
+  ...     template = ViewPageTemplateFile(getPath('termitem.pt'), '')
+
+  >>> component.provideAdapter(
+  ...     TermView, (None, None, None, ITermItem, None), IPagelet)
+
+    >>> widget.update()
+    >>> print widget.render()
+    <ul class="z-listing">
+      <li>
+      <div class="z-listing-icon">
+        <input type="checkbox" name="widget.name:list" title="a"
+               value="a" id="widget-id-0" />
+      </div>
+      <div class="z-listing-details">
+        <span>a</span>
+        <div></div>
+      </div>
+    <BLANKLINE>
+    </li>
+      <li>
+      <div class="z-listing-icon">
+        <input type="checkbox" name="widget.name:list" title="b"
+               value="b" id="widget-id-1" />
+      </div>
+      <div class="z-listing-details">
+        <span>b</span>
+        <div></div>
+      </div>
+    <BLANKLINE>
+    </li>
+      <li>
+      <div class="z-listing-icon">
+        <input type="checkbox" name="widget.name:list" title="c"
+               value="c" id="widget-id-2" />
+      </div>
+      <div class="z-listing-details">
+        <span>c</span>
+        <div></div>
+      </div>
+    <BLANKLINE>
+    </li>
+    </ul>
+    <div  style="clear: both;">
+      <input name="widget.name-empty-marker" type="hidden"
+             value="1" />
+    </div>
+    <BLANKLINE>
+
+
+If we select item "b", then it should be selected:
+
+    >>> widget.value = ['b']
+    >>> widget.update()
+    >>> print widget.render()
+    <ul class="z-listing">
+      <li>
+      <div class="z-listing-icon">
+        <input type="checkbox" name="widget.name:list" title="a"
+               value="a" id="widget-id-0" />
+      </div>
+      <div class="z-listing-details">
+        <span>a</span>
+        <div></div>
+      </div>
+    <BLANKLINE>
+    </li>
+      <li>
+      <div class="z-listing-icon">
+        <input type="checkbox" checked="checked"
+               name="widget.name:list" title="b" value="b"
+               id="widget-id-1" />
+      </div>
+      <div class="z-listing-details">
+        <span>b</span>
+        <div></div>
+      </div>
+    <BLANKLINE>
+    </li>
+      <li>
+      <div class="z-listing-icon">
+        <input type="checkbox" name="widget.name:list" title="c"
+               value="c" id="widget-id-2" />
+      </div>
+      <div class="z-listing-details">
+        <span>c</span>
+        <div></div>
+      </div>
+    <BLANKLINE>
+    </li>
+    </ul>
+    <div style="clear: both;">
+      <input name="widget.name-empty-marker" type="hidden"
+             value="1" />
+    </div>
+    <BLANKLINE>
+
+Let's now make sure that we can extract user entered data from a widget:
+
+  >>> widget.request = TestRequest(form={'widget.name': ['c']})
+  >>> widget.update()
+  >>> widget.extract()
+  ['c']
+
+When "no value" is selected, then no verification against the terms is done:
+
+  >>> widget.request = TestRequest(form={'widget.name': ['--NOVALUE--']})
+  >>> widget.update()
+  >>> widget.extract(default=1)
+  ['--NOVALUE--']
+
+Unfortunately, when nothing is selected, we do not get an empty list sent into
+the request, but simply no entry at all. For this we have the empty marker, so
+that:
+
+  >>> widget.request = TestRequest(form={'widget.name-empty-marker': '1'})
+  >>> widget.update()
+  >>> widget.extract()
+  []
+
+If nothing is found in the request, the default is returned:
+
+  >>> widget.request = TestRequest()
+  >>> widget.update()
+  >>> widget.extract(default=1)
+  1
+
+Let's now make sure that a bogus value causes extract to return the default as
+described by the interface:
+
+  >>> widget.request = TestRequest(form={'widget.name': ['x']})
+  >>> widget.update()
+  >>> widget.extract(default=1)
+  1
+
+
+checkbox field
+--------------
+
+  >>> from zojax.widget.checkbox.field import CheckboxList
+  >>> from zojax.widget.checkbox.widget import CheckboxWidgetFactory
+  
+  >>> component.provideAdapter(CheckboxWidgetFactory)
+
+  >>> field = CheckboxList(title=u'Checkbox choice', vocabulary=voc)
+  >>> widget = component.getMultiAdapter(
+  ...     (field, request), interface=interfaces.IFieldWidget)
+  >>> ICheckboxWidget.providedBy(widget)
+  True
+
+  >>> widget.update()
+  >>> print widget.render()
+  <ul class="z-listing required checkboxlist-field">
+  ...
+  </ul>
+  <div style="clear: both;">
+    <input name="-empty-marker" type="hidden" value="1" />
+  </div>
+
+  >>> field = CheckboxList(
+  ...     title=u'Checkbox choice', vocabulary=voc, horizontal=True)
+  >>> widget = component.getMultiAdapter(
+  ...     (field, request), interface=interfaces.IFieldWidget)
+  >>> widget.update()
+  >>> print widget.render()
+  <ul class="z-hlisting checkboxlist-field">
+  ...
+  </ul>
+  <div style="clear: both;">
+    <input name="-empty-marker" type="hidden" value="1" />
+  </div>
+
+

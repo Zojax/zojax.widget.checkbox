@@ -1,0 +1,38 @@
+<configure
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:zojax="http://namespaces.zope.org/zojax"
+   xmlns:z3c="http://namespaces.zope.org/z3c">
+
+  <adapter factory=".widget.CheckboxWidgetFactory" />
+
+  <z3c:widgetTemplate
+     mode="input"
+     widget=".interfaces.ICheckboxWidget"
+     layer="z3c.form.interfaces.IFormLayer"
+     template="widget_input.pt" />
+
+  <z3c:widgetTemplate
+     mode="hidden"
+     widget=".interfaces.ICheckboxWidget"
+     layer="z3c.form.interfaces.IFormLayer"
+     template="widget_hidden.pt" />
+
+  <zojax:pagelet
+     type="pagelet"
+     for="* z3c.form.interfaces.IForm * .interfaces.ITermItem"
+     template="termitem.pt" />
+
+  <class class=".widget.TermItem">
+    <allow interface=".interfaces.ITermItem" />
+  </class>
+
+  <adapter factory=".widget.OptCheckboxWidgetFactory" />
+  <adapter factory=".widget.OptCheckboxDataConverter" />
+
+  <z3c:widgetTemplate
+     mode="input"
+     widget=".interfaces.IOptCheckboxWidget"
+     layer="z3c.form.interfaces.IFormLayer"
+     template="optwidget_input.pt" />
+
+</configure>

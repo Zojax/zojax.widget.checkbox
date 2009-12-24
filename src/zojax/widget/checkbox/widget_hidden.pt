@@ -1,0 +1,10 @@
+<tal:block repeat="item view/items">
+    <input type="hidden"
+           tal:define="item python:item.contexts[2]"
+           tal:attributes="id item/id;
+                           name string:${widget/name}:list;
+                           title item/title;
+                           value item/token;"
+           tal:condition="item/selected"
+                          />
+</tal:block>
