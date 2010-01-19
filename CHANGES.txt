@@ -1,32 +1,8 @@
-=======
-CHANGES
-=======
-
-0.4.0 (2009-11-23)
+1.0.2 (Unreleased)
 ------------------
 
-- Copyright changed to 'Zope Foundation and Contributors'
 
-- Tests updated
-
-
-0.3.0 (2009-05-20)
+1.0.1 (2010-01-19)
 ------------------
 
-- Hidden template added
-
-- Optional Checkbox field/widget added
-
-
-0.2.0 (2009-03-11)
-------------------
-
-- Added includeDependencies
-
-- Fix widget html
-
-
-0.1.0 (2009-01-25)
-------------------
-
-- Initial release.
+- zojax initial release
