@@ -4,7 +4,7 @@
   </li>
 </ul>
 <br />
-<div class="z-custom-label">Custom values</div>
+<div class="z-custom-label" i18n:translate="">Custom values</div>
 <div class="z-custom" tal:condition="view/customWidget" tal:content="structure view/customWidget/render" />
 <div style="clear: both;">
   <input name="field-empty-marker" type="hidden" value="1"
