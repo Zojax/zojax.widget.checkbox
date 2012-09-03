@@ -10,7 +10,7 @@
                            disabled widget/disabled;" />
   </div>
   <div class="z-listing-details">
-    <span tal:content="item/title"></span>
+    <label tal:attributes="for item/id" tal:content="item/title" />
     <div tal:content="item/description"></div>
   </div>
 </tal:block>
