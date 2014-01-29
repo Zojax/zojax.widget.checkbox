@@ -85,45 +85,25 @@ Let's register view for ITermItem
     >>> widget.update()
     >>> print widget.render()
     <ul class="z-listing">
-      <li>
-      <div class="z-listing-icon">
+    ...
         <input type="checkbox" name="widget.name:list" title="a"
                value="a" id="widget-id-0" />
-      </div>
-      <div class="z-listing-details">
-        <span>a</span>
-        <div></div>
-      </div>
-    <BLANKLINE>
-    </li>
-      <li>
-      <div class="z-listing-icon">
+    ...
+        <label for="widget-id-0">a</label>
+    ...
         <input type="checkbox" name="widget.name:list" title="b"
                value="b" id="widget-id-1" />
-      </div>
-      <div class="z-listing-details">
-        <span>b</span>
-        <div></div>
-      </div>
-    <BLANKLINE>
-    </li>
-      <li>
-      <div class="z-listing-icon">
+    ...
+        <label for="widget-id-1">b</label>
+    ...
         <input type="checkbox" name="widget.name:list" title="c"
                value="c" id="widget-id-2" />
-      </div>
-      <div class="z-listing-details">
-        <span>c</span>
-        <div></div>
-      </div>
-    <BLANKLINE>
-    </li>
-    </ul>
-    <div  style="clear: both;">
-      <input name="widget.name-empty-marker" type="hidden"
-             value="1" />
+    ...
+        <label for="widget-id-2">c</label>
+    ...
     </div>
-    <BLANKLINE>
+
+
 
 
 If we select item "b", then it should be selected:
@@ -132,46 +112,25 @@ If we select item "b", then it should be selected:
     >>> widget.update()
     >>> print widget.render()
     <ul class="z-listing">
-      <li>
-      <div class="z-listing-icon">
+    ...
         <input type="checkbox" name="widget.name:list" title="a"
                value="a" id="widget-id-0" />
-      </div>
-      <div class="z-listing-details">
-        <span>a</span>
-        <div></div>
-      </div>
-    <BLANKLINE>
-    </li>
-      <li>
-      <div class="z-listing-icon">
+    ...
+        <label for="widget-id-0">a</label>
+    ...
         <input type="checkbox" checked="checked"
                name="widget.name:list" title="b" value="b"
                id="widget-id-1" />
-      </div>
-      <div class="z-listing-details">
-        <span>b</span>
-        <div></div>
-      </div>
-    <BLANKLINE>
-    </li>
-      <li>
-      <div class="z-listing-icon">
+    ...
+        <label for="widget-id-1">b</label>
+    ...
         <input type="checkbox" name="widget.name:list" title="c"
                value="c" id="widget-id-2" />
-      </div>
-      <div class="z-listing-details">
-        <span>c</span>
-        <div></div>
-      </div>
-    <BLANKLINE>
-    </li>
-    </ul>
-    <div style="clear: both;">
-      <input name="widget.name-empty-marker" type="hidden"
-             value="1" />
+    ...
+        <label for="widget-id-2">c</label>
+    ...
     </div>
-    <BLANKLINE>
+
 
 Let's now make sure that we can extract user entered data from a widget:
 
